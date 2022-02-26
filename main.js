@@ -1,6 +1,8 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow} = require('electron')
 const path = require('path')
+const url = require("url");
+const exec = require('child_process').execFile;
 
 function createWindow () {
   // Create the browser window.
@@ -8,22 +10,43 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      nodeIntegration:  true,
+      // contextIsolation: false,
+      // preload: path.join(__dirname, 'preload.js')
     }
   })
 
-  // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+
+  mainWindow.loadURL('http://127.0.0.1:8001');
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
+}
+
+/**
+ * Function to execute exe
+ * @param {string} fileName The name of the executable file to run.
+ * @param {string[]} params List of string arguments.
+ * @param {string} path Current working directory of the child process.
+ */
+function execute(fileName, params){//, path) {
+  console.log("running exe")
+  let promise = new Promise((resolve, reject) => {
+    exec(fileName, params, /*{ cwd: path },*/ (err, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+
+  });
+  return promise;
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  createWindow()
+  if(execute("cu5.exe", []))//, "G:/admintool/emAdmintool/nativeMessaging/"))
+    createWindow()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
